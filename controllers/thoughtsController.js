@@ -1,10 +1,10 @@
-const { Thoughts } = require("../models");
+const { Thought, User } = require("../models");
 
 module.exports = {
   //get all thoughts
   async getAllThoughts(req, res) {
     try {
-      const thoughtsData = await Thoughts.find({});
+      const thoughtsData = await Thought.find({});
       res.status(200).json(thoughtsData);
     } catch (err) {
       console.log(err);
@@ -13,7 +13,7 @@ module.exports = {
   },
   async getThoughtById(req, res) {
     try {
-      const thoughtsData = await Thoughts.findOne({
+      const thoughtsData = await Thought.findOne({
         _id: req.params.thoughtId,
       }).select("-__v");
       if (!thoughtsData) {
@@ -28,7 +28,14 @@ module.exports = {
   },
   async createThought(req, res) {
     try {
-      const thoughtsData = await Thoughts.create(req.body);
+      const thoughtsData = await Thought.create(req.body)
+      .then(({ _id }) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $push: { thoughts: _id } },
+          { new: true }
+        );
+      });
       res.json(thoughtsData);
     } catch (err) {
       console.log(err);
@@ -38,8 +45,15 @@ module.exports = {
   },
   async deleteThought(req, res) {
     try {
-      const thoughtsData = await Thoughts.findOneAndDelete({
+      const thoughtsData = await Thought.findOneAndDelete({
         _id: req.params.thoughtId,
+      })
+      .then(({ _id }) => {
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $pull: { thoughts: _id } },
+          { new: true }
+        );
       });
       if (!thoughtsData) {
         return res
@@ -52,7 +66,7 @@ module.exports = {
   },
   async updateThought(req, res) {
     try {
-      const thoughtsData = await Thoughts.findOneAndUpdate(
+      const thoughtsData = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
         { $set: req.body },
         { runValidators: true, new: true }

@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Thought } = require("../models");
 
 module.exports = {
   // get all users
@@ -15,7 +15,10 @@ module.exports = {
     try {
       const singleUserData = await User.findOne({
         _id: req.params.userId,
-      }).select("-__v");
+      })
+      .populate("thoughts")
+      .populate("friends")
+      .select("-__v");
       if (!singleUserData) {
         return res.status(404).json({ message: "No user found with this id!" });
       }
@@ -60,4 +63,36 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  // add a friend to a user's friend list
+  async addFriend(req, res) {
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { runValidators: true, new: true }
+      );
+      if (!userData) {
+        return res.status(404).json({ message: "No user found with this id!" });
+      }
+      res.json(userData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  // remove a friend from a user's friend list
+  async removeFriend(req, res) {
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { runValidators: true, new: true }
+      );
+      if (!userData) {
+        return res.status(404).json({ message: "No user found with this id!" });
+      }
+      res.json(userData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
 };
