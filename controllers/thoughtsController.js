@@ -81,4 +81,39 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  async addReaction(req, res) {
+    try {
+      const thoughtsData = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $push: { reactions: req.body } },
+        { runValidators: true, new: true }
+      );
+      if (!thoughtsData) {
+        return res
+          .status(404)
+          .json({ message: "no thought found with this id!" });
+      }
+      res.json(thoughtsData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+  async removeReaction(req, res) {
+    try {
+      const thoughtsData = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
+        { runValidators: true, new: true }
+      );
+      if (!thoughtsData) {
+        return res
+          .status(404)
+          .json({ message: "no thought found with this id!" });
+      }
+      res.json(thoughtsData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
+
 };
