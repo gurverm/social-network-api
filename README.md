@@ -28,8 +28,14 @@ An API for a social network web application where users can share thoughts, reac
 ## Tests
 To test the API and its funcitonality I would recommend using Insomnia. Insomnia is a great tool for testing RESTFUL APIs.
 
-![DEMO]()
+Below are some examples of the users API routes and their functionality including the adding and removal of friends.
+![DEMO](./images/users.gif)
 
+Below are some examples of the thoughts API routes and their functionality including the adding and removal or reactions.
+![DEMO](./images/thoughts.gif)
+
+https://drive.google.com/file/d/1XkIUgQuGtuE_-AEN8BAdSHHm-Gi6KloS/view 
+https://drive.google.com/file/d/1GDcxX1oQZ9iV5R3z4ElQuYcyU1o1WBl7/view
 ## License
 This project is licensed under mit 
 https://opensource.org/licenses/MIT
