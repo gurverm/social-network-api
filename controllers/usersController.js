@@ -1,4 +1,4 @@
-const { User, Thought } = require("../models");
+const { Thought, User  } = require("../models");
 
 module.exports = {
   // get all users
@@ -16,7 +16,7 @@ module.exports = {
       const singleUserData = await User.findOne({
         _id: req.params.userId,
       })
-      .populate("thoughts")
+      .populate("thought")
       .populate("friends")
       .select("-__v");
       if (!singleUserData) {
@@ -24,6 +24,7 @@ module.exports = {
       }
       res.json(singleUserData);
     } catch (err) {
+      console.log(err);
       res.status(500).json(err);
     }
   },
@@ -42,7 +43,9 @@ module.exports = {
       const userData = await User.findOneAndDelete({ _id: req.params.userId });
       if (!userData) {
         return res.status(404).json({ message: "No user found with this id!" });
+
       }
+      await Thought.deleteMany({ _id: { $in: userData.thoughts } });
     } catch (err) {
       res.status(500).json(err);
     }
